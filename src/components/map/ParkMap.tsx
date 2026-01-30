@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { Park } from "@/lib/api/parks";
 
 // Fix default marker icons for Leaflet
@@ -28,7 +31,7 @@ export const ParkMap = ({
 }: ParkMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -60,9 +63,40 @@ export const ParkMap = ({
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current = [];
+    // Clear existing cluster group
+    if (clusterGroupRef.current) {
+      map.removeLayer(clusterGroupRef.current);
+    }
+
+    // Create cluster group with custom styling
+    const clusterGroup = L.markerClusterGroup({
+      chunkedLoading: true,
+      maxClusterRadius: 50,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: true,
+      iconCreateFunction: (cluster) => {
+        const count = cluster.getChildCount();
+        let size = "small";
+        let dimension = 40;
+
+        if (count >= 10 && count < 50) {
+          size = "medium";
+          dimension = 50;
+        } else if (count >= 50) {
+          size = "large";
+          dimension = 60;
+        }
+
+        return L.divIcon({
+          html: `<div class="cluster-marker cluster-${size}">
+            <span>${count}</span>
+          </div>`,
+          className: "custom-cluster-icon",
+          iconSize: L.point(dimension, dimension),
+        });
+      },
+    });
 
     // Create custom icon
     const customIcon = L.divIcon({
@@ -98,7 +132,7 @@ export const ParkMap = ({
       if (park.latitude && park.longitude) {
         const marker = L.marker([park.latitude, park.longitude], {
           icon: customIcon,
-        }).addTo(map);
+        });
 
         // Create popup content
         const popupContent = `
@@ -132,14 +166,16 @@ export const ParkMap = ({
           marker.on("click", () => onMarkerClick(park));
         }
 
-        markersRef.current.push(marker);
+        clusterGroup.addLayer(marker);
       }
     });
 
+    map.addLayer(clusterGroup);
+    clusterGroupRef.current = clusterGroup;
+
     // Fit bounds if we have markers, but limit max zoom
-    if (markersRef.current.length > 0) {
-      const group = L.featureGroup(markersRef.current);
-      map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 10 });
+    if (clusterGroup.getLayers().length > 0) {
+      map.fitBounds(clusterGroup.getBounds().pad(0.3), { maxZoom: 10 });
     }
   }, [parks, onMarkerClick]);
 
