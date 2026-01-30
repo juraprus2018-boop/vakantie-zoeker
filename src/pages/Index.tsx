@@ -9,6 +9,8 @@ import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { JsonLd, getWebsiteSchema, getOrganizationSchema } from "@/components/seo/JsonLd";
 
 const parkTypes = [
   { id: "camping", label: "Campings", icon: Tent },
@@ -38,6 +40,14 @@ const Index = () => {
 
   return (
     <Layout>
+      <SEOHead
+        title="Vakantie Parken NL | Ontdek de mooiste vakantieparken van Nederland"
+        description="Vind en vergelijk de beste vakantieparken, campings, bungalowparken en glamping in Nederland. Bekijk reviews, foto's en boek direct."
+        canonical="https://vakantieparken.nl"
+      />
+      <JsonLd data={getWebsiteSchema()} />
+      <JsonLd data={getOrganizationSchema()} />
+      
       {/* Hero Section with Background */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
