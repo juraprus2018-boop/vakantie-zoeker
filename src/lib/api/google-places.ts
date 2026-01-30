@@ -69,6 +69,23 @@ export const googlePlacesApi = {
     return data.result;
   },
 
+  async downloadPhoto(photoReference: string, parkId: string): Promise<string> {
+    const { data, error } = await supabase.functions.invoke("google-places", {
+      body: { action: "downloadPhoto", photoReference, parkId },
+    });
+
+    if (error) {
+      console.error("Download photo error:", error);
+      throw new Error(error.message || "Failed to download photo");
+    }
+
+    if (!data.success) {
+      throw new Error(data.error || "Failed to download photo");
+    }
+
+    return data.url;
+  },
+
   getPhotoUrl(photoReference: string, maxWidth: number = 800): string {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     return `https://${projectId}.supabase.co/functions/v1/google-places?action=photo&photoRef=${photoReference}`;

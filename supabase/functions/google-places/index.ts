@@ -42,14 +42,49 @@ serve(async (req) => {
       throw new Error("GOOGLE_PLACES_API_KEY is not configured");
     }
 
-    const { action, query, placeId, location, radius, type } = await req.json();
+    const url = new URL(req.url);
+    const actionParam = url.searchParams.get("action");
+    
+    // Handle GET requests for photos
+    if (req.method === "GET" && actionParam === "photo") {
+      const photoRef = url.searchParams.get("photoRef");
+      if (!photoRef) {
+        throw new Error("photoRef is required");
+      }
+      
+      const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photoRef}&key=${GOOGLE_PLACES_API_KEY}`;
+      const photoResponse = await fetch(photoUrl);
+      
+      if (!photoResponse.ok) {
+        throw new Error("Failed to fetch photo from Google");
+      }
+      
+      const imageData = await photoResponse.arrayBuffer();
+      const contentType = photoResponse.headers.get("content-type") || "image/jpeg";
+      
+      return new Response(imageData, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": contentType,
+          "Cache-Control": "public, max-age=86400",
+        },
+      });
+    }
+
+    const body = await req.json();
+    const { action, query, placeId, type, parkId, photoReference } = body;
+
+    // Initialize Supabase client for storage operations
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     if (action === "search") {
       // Text search for parks in a region
       const searchQuery = `${type || "vakantiepark"} ${query}`;
-      const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&region=nl&language=nl&key=${GOOGLE_PLACES_API_KEY}`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&region=nl&language=nl&key=${GOOGLE_PLACES_API_KEY}`;
       
-      const response = await fetch(url);
+      const response = await fetch(apiUrl);
       const data = await response.json();
 
       if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
@@ -77,9 +112,9 @@ serve(async (req) => {
     if (action === "details") {
       // Get detailed info for a specific place
       const fields = "place_id,name,formatted_address,geometry,rating,user_ratings_total,photos,opening_hours,website,formatted_phone_number,types,address_components";
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&language=nl&key=${GOOGLE_PLACES_API_KEY}`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${fields}&language=nl&key=${GOOGLE_PLACES_API_KEY}`;
       
-      const response = await fetch(url);
+      const response = await fetch(apiUrl);
       const data = await response.json();
 
       if (data.status !== "OK") {
@@ -135,17 +170,48 @@ serve(async (req) => {
       });
     }
 
-    if (action === "photo") {
-      // Get photo URL
-      const photoRef = req.url.includes("photoRef=") 
-        ? new URL(req.url).searchParams.get("photoRef")
-        : null;
+    if (action === "downloadPhoto") {
+      // Download photo from Google and save to Supabase storage
+      if (!photoReference || !parkId) {
+        throw new Error("photoReference and parkId are required");
+      }
+
+      // Fetch photo from Google
+      const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photo_reference=${photoReference}&key=${GOOGLE_PLACES_API_KEY}`;
+      const photoResponse = await fetch(photoUrl);
       
-      const reference = photoRef || (await req.json()).photoReference;
-      const maxWidth = 800;
-      const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=${maxWidth}&photo_reference=${reference}&key=${GOOGLE_PLACES_API_KEY}`;
-      
-      return new Response(JSON.stringify({ success: true, url: photoUrl }), {
+      if (!photoResponse.ok) {
+        throw new Error("Failed to fetch photo from Google");
+      }
+
+      const imageData = await photoResponse.arrayBuffer();
+      const contentType = photoResponse.headers.get("content-type") || "image/jpeg";
+      const extension = contentType.includes("png") ? "png" : "jpg";
+      const fileName = `${parkId}/${crypto.randomUUID()}.${extension}`;
+
+      // Upload to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("park-images")
+        .upload(fileName, imageData, {
+          contentType,
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw new Error(`Failed to upload photo: ${uploadError.message}`);
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("park-images")
+        .getPublicUrl(fileName);
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        url: urlData.publicUrl,
+        path: fileName,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

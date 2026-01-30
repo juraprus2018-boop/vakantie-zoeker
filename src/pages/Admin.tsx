@@ -13,8 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { googlePlacesApi, PlaceSearchResult } from "@/lib/api/google-places";
 import { parksApi, Park } from "@/lib/api/parks";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, MapPin, Star, Trash2, Eye, EyeOff, Plus, RefreshCw } from "lucide-react";
+import { ParkEditDialog } from "@/components/admin/ParkEditDialog";
+import { useQuery } from "@tanstack/react-query";
+import { Search, MapPin, Star, Trash2, Eye, EyeOff, Plus, RefreshCw, Pencil, Image } from "lucide-react";
 
 const parkTypeOptions = [
   { value: "camping", label: "Camping" },
@@ -27,7 +28,6 @@ const parkTypeOptions = [
 const Admin = () => {
   const { user, isAdmin, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   // Google Places Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,6 +36,11 @@ const Admin = () => {
   const [selectedPlaces, setSelectedPlaces] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [importProgress, setImportProgress] = useState("");
+
+  // Edit state
+  const [editingPark, setEditingPark] = useState<Park | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   // Fetch existing parks
   const { data: parks = [], isLoading: parksLoading, refetch: refetchParks } = useQuery({
@@ -110,13 +115,20 @@ const Admin = () => {
     let skipped = 0;
 
     try {
+      const totalPlaces = selectedPlaces.size;
+      let current = 0;
+
       for (const placeId of selectedPlaces) {
+        current++;
+        
         // Check if already exists
         const existing = parks.find((p) => p.google_place_id === placeId);
         if (existing) {
           skipped++;
           continue;
         }
+
+        setImportProgress(`Importeren ${current}/${totalPlaces}...`);
 
         // Get full details
         const details = await googlePlacesApi.getDetails(placeId);
@@ -139,10 +151,16 @@ const Admin = () => {
           park_type: searchType as any,
         });
 
-        // Add photos
+        // Download and save photos to storage
+        setImportProgress(`Foto's downloaden ${current}/${totalPlaces}...`);
         for (const photo of details.photos.slice(0, 5)) {
-          const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=${photo.photo_reference}&key=${import.meta.env.VITE_GOOGLE_PLACES_API_KEY || "API_KEY"}`;
-          await parksApi.addPhoto(park.id, photoUrl, photo.photo_reference, true);
+          try {
+            const photoUrl = await googlePlacesApi.downloadPhoto(photo.photo_reference, park.id);
+            await parksApi.addPhoto(park.id, photoUrl, photo.photo_reference, true);
+          } catch (photoError) {
+            console.error("Error downloading photo:", photoError);
+            // Continue with next photo if one fails
+          }
         }
 
         imported++;
@@ -165,6 +183,7 @@ const Admin = () => {
       });
     } finally {
       setIsImporting(false);
+      setImportProgress("");
     }
   };
 
@@ -198,6 +217,11 @@ const Admin = () => {
     } catch (error: any) {
       toast({ title: "Fout", description: error.message, variant: "destructive" });
     }
+  };
+
+  const handleEdit = (park: Park) => {
+    setEditingPark(park);
+    setIsEditDialogOpen(true);
   };
 
   return (
@@ -280,7 +304,7 @@ const Admin = () => {
                         {isImporting ? (
                           <>
                             <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                            Importeren...
+                            {importProgress || "Importeren..."}
                           </>
                         ) : (
                           <>
@@ -388,7 +412,15 @@ const Admin = () => {
                             {park.city || park.province || "Nederland"} • {park.park_type}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(park)}
+                            title="Bewerken"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -432,6 +464,14 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit Dialog */}
+      <ParkEditDialog
+        park={editingPark}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSave={() => refetchParks()}
+      />
     </Layout>
   );
 };

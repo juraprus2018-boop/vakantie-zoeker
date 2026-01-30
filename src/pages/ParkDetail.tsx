@@ -2,10 +2,10 @@ import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewCard } from "@/components/reviews/ReviewCard";
+import { PhotoSlider } from "@/components/parks/PhotoSlider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { parksApi } from "@/lib/api/parks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -15,15 +15,13 @@ import {
   Globe,
   Clock,
   ChevronLeft,
-  ChevronRight,
   ExternalLink,
+  Calendar,
 } from "lucide-react";
-import { useState } from "react";
 
 const ParkDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const { data: park, isLoading, error } = useQuery({
     queryKey: ["park", id],
@@ -34,10 +32,10 @@ const ParkDetail = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container py-8">
-          <div className="animate-pulse">
+        <div className="animate-pulse">
+          <div className="h-[50vh] bg-muted" />
+          <div className="container py-8">
             <div className="h-8 bg-muted rounded w-1/3 mb-4" />
-            <div className="aspect-video bg-muted rounded-lg mb-8" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-4">
                 <div className="h-4 bg-muted rounded w-full" />
@@ -69,97 +67,70 @@ const ParkDetail = () => {
   const displayRating = park.google_rating ? Number(park.google_rating).toFixed(1) : null;
   const photos = park.photos || [];
 
-  const nextPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length);
-  };
-
-  const prevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
-  };
-
   return (
     <Layout>
-      <div className="container py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <Link to="/zoeken" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-            <ChevronLeft className="h-4 w-4" />
-            Terug naar zoeken
-          </Link>
-        </div>
-
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold">{park.name}</h1>
-              <div className="flex items-center gap-4 mt-2 text-muted-foreground">
-                <div className="flex items-center gap-1">
+      {/* Hero Banner with Photo Slider */}
+      <div className="relative">
+        <PhotoSlider photos={photos} parkName={park.name} />
+        
+        {/* Overlay Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
+          <div className="container">
+            <Link 
+              to="/zoeken" 
+              className="inline-flex items-center gap-1 text-white/80 hover:text-white mb-4 text-sm transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Terug naar zoeken
+            </Link>
+            
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  {park.park_type && (
+                    <Badge variant="secondary" className="capitalize bg-white/20 text-white border-0 backdrop-blur-sm">
+                      {park.park_type}
+                    </Badge>
+                  )}
+                  {displayRating && (
+                    <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-white text-sm">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span>{displayRating}</span>
+                      {park.google_ratings_total && (
+                        <span className="text-white/70">({park.google_ratings_total})</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
+                  {park.name}
+                </h1>
+                <div className="flex items-center gap-2 mt-2 text-white/80">
                   <MapPin className="h-4 w-4" />
                   <span>{park.city || park.province || "Nederland"}</span>
                 </div>
-                {displayRating && (
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span>{displayRating}</span>
-                    {park.google_ratings_total && (
-                      <span className="text-sm">({park.google_ratings_total} reviews)</span>
-                    )}
-                  </div>
-                )}
               </div>
+              
+              {park.website && (
+                <a
+                  href={park.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button size="lg" className="gap-2 shadow-lg">
+                    <Calendar className="h-5 w-5" />
+                    Boeken / Website
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                </a>
+              )}
             </div>
-            {park.park_type && (
-              <Badge variant="secondary" className="capitalize text-sm">
-                {park.park_type}
-              </Badge>
-            )}
           </div>
         </div>
+      </div>
 
-        {/* Photo Gallery */}
-        {photos.length > 0 ? (
-          <div className="relative aspect-video mb-8 rounded-lg overflow-hidden bg-muted">
-            <img
-              src={photos[currentPhotoIndex].photo_url}
-              alt={park.name}
-              className="w-full h-full object-cover"
-            />
-            {photos.length > 1 && (
-              <>
-                <button
-                  onClick={prevPhoto}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  onClick={nextPhoto}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-background/80 rounded-full hover:bg-background transition-colors"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {photos.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPhotoIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentPhotoIndex ? "bg-white" : "bg-white/50"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="aspect-video mb-8 rounded-lg bg-muted flex items-center justify-center">
-            <MapPin className="h-16 w-16 text-muted-foreground/50" />
-          </div>
-        )}
-
-        {/* Content Grid */}
+      {/* Content Grid */}
+      <div className="container py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -167,7 +138,9 @@ const ParkDetail = () => {
             {park.description && (
               <section>
                 <h2 className="text-xl font-semibold mb-4">Over dit park</h2>
-                <p className="text-muted-foreground whitespace-pre-line">{park.description}</p>
+                <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+                  {park.description}
+                </p>
               </section>
             )}
 
@@ -177,7 +150,7 @@ const ParkDetail = () => {
                 <h2 className="text-xl font-semibold mb-4">Faciliteiten</h2>
                 <div className="flex flex-wrap gap-2">
                   {park.facilities.map((facility, index) => (
-                    <Badge key={index} variant="outline">
+                    <Badge key={index} variant="outline" className="py-2 px-4">
                       {facility}
                     </Badge>
                   ))}
@@ -226,6 +199,30 @@ const ParkDetail = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Book CTA Card */}
+            {park.website && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-2">Interesse in dit park?</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Bekijk beschikbaarheid en prijzen op de website van het park.
+                  </p>
+                  <a
+                    href={park.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <Button className="w-full gap-2">
+                      <Globe className="h-4 w-4" />
+                      Ga naar website
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </a>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Contact Info */}
             <Card>
               <CardHeader>
@@ -280,6 +277,25 @@ const ParkDetail = () => {
                       </li>
                     ))}
                   </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Google Rating */}
+            {displayRating && (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full">
+                      <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold">{displayRating}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {park.google_ratings_total} Google reviews
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}
