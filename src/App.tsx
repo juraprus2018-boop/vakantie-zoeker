@@ -10,6 +10,9 @@ import ParkDetail from "./pages/ParkDetail";
 import Map from "./pages/Map";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import OwnerLanding from "./pages/OwnerLanding";
+import OwnerAuth from "./pages/OwnerAuth";
+import OwnerDashboard from "./pages/OwnerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,10 @@ const App = () => (
             <Route path="/kaart" element={<Map />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/eigenaar" element={<OwnerLanding />} />
+            <Route path="/eigenaar/registreren" element={<OwnerAuth />} />
+            <Route path="/eigenaar/login" element={<OwnerAuth />} />
+            <Route path="/eigenaar/dashboard" element={<OwnerDashboard />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

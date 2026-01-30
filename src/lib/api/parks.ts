@@ -97,7 +97,7 @@ export const parksApi = {
     };
   },
 
-  async create(park: ParkInsert): Promise<Park> {
+  async create(park: ParkInsert & { owner_id?: string; is_pending?: boolean }): Promise<Park> {
     const { data, error } = await supabase
       .from("parks")
       .insert(park)
