@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { MapPin, Menu, X } from "lucide-react";
+import { MapPin, Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const parkTypes = [
+  { slug: "camping", label: "Campings" },
+  { slug: "bungalowpark", label: "Bungalowparken" },
+  { slug: "glamping", label: "Glamping" },
+  { slug: "vakantiepark", label: "Vakantieparken" },
+  { slug: "resort", label: "Resorts" },
+];
+
+const provinces = [
+  { slug: "noord-holland", label: "Noord-Holland" },
+  { slug: "zuid-holland", label: "Zuid-Holland" },
+  { slug: "gelderland", label: "Gelderland" },
+  { slug: "noord-brabant", label: "Noord-Brabant" },
+  { slug: "zeeland", label: "Zeeland" },
+];
 
 export const Header = () => {
   const { user, isAdmin, signOut } = useAuth();
@@ -24,6 +46,37 @@ export const Header = () => {
           <Link to="/kaart" className="text-sm font-medium hover:text-primary transition-colors">
             Kaart
           </Link>
+          
+          {/* Park Types Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors">
+              Parktypes
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {parkTypes.map((type) => (
+                <DropdownMenuItem key={type.slug} asChild>
+                  <Link to={`/${type.slug}`}>{type.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Provinces Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium hover:text-primary transition-colors">
+              Provincies
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {provinces.map((province) => (
+                <DropdownMenuItem key={province.slug} asChild>
+                  <Link to={`/provincie/${province.slug}`}>{province.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Link to="/eigenaar" className="text-sm font-medium hover:text-primary transition-colors">
             Voor eigenaren
           </Link>
@@ -66,6 +119,41 @@ export const Header = () => {
             >
               Kaart
             </Link>
+            
+            {/* Mobile Park Types */}
+            <div className="space-y-2">
+              <span className="text-sm font-semibold text-muted-foreground">Parktypes</span>
+              <div className="pl-4 flex flex-col gap-2">
+                {parkTypes.map((type) => (
+                  <Link
+                    key={type.slug}
+                    to={`/${type.slug}`}
+                    className="text-sm hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {type.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Provinces */}
+            <div className="space-y-2">
+              <span className="text-sm font-semibold text-muted-foreground">Provincies</span>
+              <div className="pl-4 flex flex-col gap-2">
+                {provinces.map((province) => (
+                  <Link
+                    key={province.slug}
+                    to={`/provincie/${province.slug}`}
+                    className="text-sm hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {province.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             <Link
               to="/eigenaar"
               className="text-sm font-medium hover:text-primary transition-colors"
