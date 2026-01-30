@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { googlePlacesApi, PlaceSearchResult } from "@/lib/api/google-places";
 import { parksApi, Park } from "@/lib/api/parks";
 import { ParkEditDialog } from "@/components/admin/ParkEditDialog";
+import { UserApprovalSection } from "@/components/admin/UserApprovalSection";
+import { ParkApprovalSection } from "@/components/admin/ParkApprovalSection";
 import { useQuery } from "@tanstack/react-query";
 import { Search, MapPin, Star, Trash2, Eye, EyeOff, Plus, RefreshCw, Pencil, Image } from "lucide-react";
 
@@ -232,11 +234,18 @@ const Admin = () => {
           <p className="text-muted-foreground mt-1">Beheer vakantieparken en reviews</p>
         </div>
 
-        <Tabs defaultValue="import">
+        <Tabs defaultValue="approvals">
           <TabsList className="mb-6">
+            <TabsTrigger value="approvals">Goedkeuringen</TabsTrigger>
             <TabsTrigger value="import">Importeren</TabsTrigger>
             <TabsTrigger value="parks">Parken ({parks.length})</TabsTrigger>
           </TabsList>
+
+          {/* Approvals Tab */}
+          <TabsContent value="approvals" className="space-y-6">
+            <UserApprovalSection />
+            <ParkApprovalSection />
+          </TabsContent>
 
           {/* Import Tab */}
           <TabsContent value="import">

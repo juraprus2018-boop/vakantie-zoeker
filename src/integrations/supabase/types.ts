@@ -67,11 +67,13 @@ export type Database = {
           google_ratings_total: number | null
           id: string
           is_featured: boolean | null
+          is_pending: boolean
           is_visible: boolean | null
           latitude: number | null
           longitude: number | null
           name: string
           opening_hours: Json | null
+          owner_id: string | null
           park_type: Database["public"]["Enums"]["park_type"] | null
           phone: string | null
           postal_code: string | null
@@ -90,11 +92,13 @@ export type Database = {
           google_ratings_total?: number | null
           id?: string
           is_featured?: boolean | null
+          is_pending?: boolean
           is_visible?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name: string
           opening_hours?: Json | null
+          owner_id?: string | null
           park_type?: Database["public"]["Enums"]["park_type"] | null
           phone?: string | null
           postal_code?: string | null
@@ -113,11 +117,13 @@ export type Database = {
           google_ratings_total?: number | null
           id?: string
           is_featured?: boolean | null
+          is_pending?: boolean
           is_visible?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name?: string
           opening_hours?: Json | null
+          owner_id?: string | null
           park_type?: Database["public"]["Enums"]["park_type"] | null
           phone?: string | null
           postal_code?: string | null
@@ -125,7 +131,15 @@ export type Database = {
           updated_at?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "parks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -133,6 +147,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          is_approved: boolean
           updated_at: string
         }
         Insert: {
@@ -140,6 +155,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          is_approved?: boolean
           updated_at?: string
         }
         Update: {
@@ -147,6 +163,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          is_approved?: boolean
           updated_at?: string
         }
         Relationships: []

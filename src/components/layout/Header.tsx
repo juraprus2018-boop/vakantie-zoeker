@@ -24,6 +24,9 @@ export const Header = () => {
           <Link to="/kaart" className="text-sm font-medium hover:text-primary transition-colors">
             Kaart
           </Link>
+          <Link to="/eigenaar" className="text-sm font-medium hover:text-primary transition-colors">
+            Voor eigenaren
+          </Link>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
               Admin
@@ -66,6 +69,13 @@ export const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Kaart
+            </Link>
+            <Link
+              to="/eigenaar"
+              className="text-sm font-medium hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Voor eigenaren
             </Link>
             {isAdmin && (
               <Link
