@@ -119,4 +119,14 @@
       hsl(var(--accent) / 0.3) 100%
     );
   }
+
+  /* Fix Leaflet z-index issues */
+  .leaflet-pane,
+  .leaflet-control {
+    z-index: 0 !important;
+  }
+  .leaflet-top,
+  .leaflet-bottom {
+    z-index: 10 !important;
+  }
 }
