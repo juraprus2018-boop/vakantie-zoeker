@@ -44,6 +44,7 @@ const OwnerDashboard = () => {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<PlaceSearchResult[]>([]);
+  const [existingPlaceIds, setExistingPlaceIds] = useState<Set<string>>(new Set());
   const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -123,9 +124,24 @@ const OwnerDashboard = () => {
     setIsSearching(true);
     setSearchResults([]);
     setSelectedPlace(null);
+    setExistingPlaceIds(new Set());
 
     try {
       const results = await googlePlacesApi.search(searchQuery, "vakantiepark");
+      
+      // Check which parks already exist in database
+      if (results.length > 0) {
+        const placeIds = results.map(r => r.place_id);
+        const { data: existingParks } = await supabase
+          .from("parks")
+          .select("google_place_id")
+          .in("google_place_id", placeIds);
+        
+        if (existingParks) {
+          setExistingPlaceIds(new Set(existingParks.map(p => p.google_place_id).filter(Boolean) as string[]));
+        }
+      }
+      
       setSearchResults(results);
       if (results.length === 0) {
         toast({ title: "Geen resultaten gevonden", description: "Probeer een andere zoekterm." });
@@ -454,35 +470,48 @@ const OwnerDashboard = () => {
                 </p>
 
                 <div className="border rounded-lg divide-y">
-                  {searchResults.map((place) => (
-                    <div
-                      key={place.place_id}
-                      className={`p-4 flex items-start gap-4 cursor-pointer hover:bg-muted/50 transition-colors ${
-                        selectedPlace === place.place_id ? "bg-primary/5 border-l-4 border-l-primary" : ""
-                      }`}
-                      onClick={() => setSelectedPlace(place.place_id)}
-                    >
-                      <Checkbox
-                        checked={selectedPlace === place.place_id}
-                        onCheckedChange={() => setSelectedPlace(place.place_id)}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="font-medium">{place.name}</span>
-                        <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {place.address}
-                          </span>
-                          {place.rating && (
+                  {searchResults.map((place) => {
+                    const alreadyExists = existingPlaceIds.has(place.place_id);
+                    return (
+                      <div
+                        key={place.place_id}
+                        className={`p-4 flex items-start gap-4 transition-colors ${
+                          alreadyExists 
+                            ? "bg-muted/50 opacity-60 cursor-not-allowed" 
+                            : `cursor-pointer hover:bg-muted/50 ${selectedPlace === place.place_id ? "bg-primary/5 border-l-4 border-l-primary" : ""}`
+                        }`}
+                        onClick={() => !alreadyExists && setSelectedPlace(place.place_id)}
+                      >
+                        <Checkbox
+                          checked={selectedPlace === place.place_id}
+                          onCheckedChange={() => !alreadyExists && setSelectedPlace(place.place_id)}
+                          disabled={alreadyExists}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{place.name}</span>
+                            {alreadyExists && (
+                              <Badge variant="secondary" className="text-xs">
+                                Al in gebruik
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                              {place.rating}
+                              <MapPin className="h-3 w-3" />
+                              {place.address}
                             </span>
-                          )}
+                            {place.rating && (
+                              <span className="flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                {place.rating}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <Button
