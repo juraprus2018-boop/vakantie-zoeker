@@ -28,18 +28,14 @@ export const Header = () => {
             Voor eigenaren
           </Link>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
-              Admin
-            </Link>
-          )}
-          {user ? (
-            <Button variant="outline" size="sm" onClick={() => signOut()}>
-              Uitloggen
-            </Button>
-          ) : (
-            <Link to="/login">
-              <Button variant="outline" size="sm">Admin Login</Button>
-            </Link>
+            <>
+              <Link to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
+                Admin
+              </Link>
+              <Button variant="outline" size="sm" onClick={() => signOut()}>
+                Uitloggen
+              </Button>
+            </>
           )}
         </nav>
 
@@ -78,22 +74,18 @@ export const Header = () => {
               Voor eigenaren
             </Link>
             {isAdmin && (
-              <Link
-                to="/admin"
-                className="text-sm font-medium hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </Link>
-            )}
-            {user ? (
-              <Button variant="outline" size="sm" onClick={() => { signOut(); setMobileMenuOpen(false); }}>
-                Uitloggen
-              </Button>
-            ) : (
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" size="sm">Admin Login</Button>
-              </Link>
+              <>
+                <Link
+                  to="/admin"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+                <Button variant="outline" size="sm" onClick={() => { signOut(); setMobileMenuOpen(false); }}>
+                  Uitloggen
+                </Button>
+              </>
             )}
           </nav>
         </div>
