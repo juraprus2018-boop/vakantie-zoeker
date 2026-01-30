@@ -92,59 +92,60 @@ const ParkDetail = () => {
       {/* Hero Banner with Photo Slider */}
       <div className="relative">
         <PhotoSlider photos={photos} parkName={park.name} />
-        
-        {/* Overlay Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-          <div className="container">
-            <Link 
-              to="/zoeken" 
-              className="inline-flex items-center gap-1 text-white/80 hover:text-white mb-4 text-sm transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Terug naar zoeken
-            </Link>
-            
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  {park.park_type && (
-                    <Badge variant="secondary" className="capitalize bg-white/20 text-white border-0 backdrop-blur-sm">
-                      {park.park_type}
-                    </Badge>
-                  )}
-                  {displayRating && (
-                    <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-white text-sm">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span>{displayRating}</span>
-                      {park.google_ratings_total && (
-                        <span className="text-white/70">({park.google_ratings_total})</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
-                  {park.name}
-                </h1>
-                <div className="flex items-center gap-2 mt-2 text-white/80">
-                  <MapPin className="h-4 w-4" />
-                  <span>{park.city || park.province || "Nederland"}</span>
-                </div>
+      </div>
+
+      {/* Park Info Section - below slider on mobile */}
+      <div className="bg-gradient-to-b from-muted/50 to-background border-b">
+        <div className="container py-6">
+          <Link 
+            to="/zoeken" 
+            className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground mb-4 text-sm transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Terug naar zoeken
+          </Link>
+          
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                {park.park_type && (
+                  <Badge variant="secondary" className="capitalize">
+                    {park.park_type}
+                  </Badge>
+                )}
+                {displayRating && (
+                  <div className="flex items-center gap-1 bg-yellow-100 dark:bg-yellow-900/30 px-2 py-1 rounded-full text-sm">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-medium">{displayRating}</span>
+                    {park.google_ratings_total && (
+                      <span className="text-muted-foreground">({park.google_ratings_total})</span>
+                    )}
+                  </div>
+                )}
               </div>
-              
-              {park.website && (
-                <a
-                  href={park.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button size="lg" className="gap-2 shadow-lg">
-                    <Calendar className="h-5 w-5" />
-                    Boeken / Website
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </a>
-              )}
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                {park.name}
+              </h1>
+              <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{park.city || park.province || "Nederland"}</span>
+              </div>
             </div>
+            
+            {park.website && (
+              <a
+                href={park.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0"
+              >
+                <Button size="lg" className="gap-2 w-full md:w-auto">
+                  <Calendar className="h-5 w-5" />
+                  Boeken / Website
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </a>
+            )}
           </div>
         </div>
       </div>

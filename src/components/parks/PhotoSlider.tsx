@@ -42,7 +42,7 @@ export const PhotoSlider = ({ photos, parkName }: PhotoSliderProps) => {
   };
 
   return (
-    <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
+    <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden">
       {/* Main Image */}
       <div className="absolute inset-0">
         <img
@@ -50,8 +50,6 @@ export const PhotoSlider = ({ photos, parkName }: PhotoSliderProps) => {
           alt={`${parkName} - foto ${currentIndex + 1}`}
           className="w-full h-full object-cover"
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
       </div>
 
       {/* Navigation Arrows */}
@@ -59,24 +57,24 @@ export const PhotoSlider = ({ photos, parkName }: PhotoSliderProps) => {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors text-white"
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-black/30 backdrop-blur-sm rounded-full hover:bg-black/50 transition-colors text-white z-10"
             aria-label="Vorige foto"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors text-white"
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-2 md:p-3 bg-black/30 backdrop-blur-sm rounded-full hover:bg-black/50 transition-colors text-white z-10"
             aria-label="Volgende foto"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
           </button>
         </>
       )}
 
-      {/* Dots Indicator */}
+      {/* Dots Indicator - hidden on mobile, visible on larger screens */}
       {photos.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {photos.map((_, index) => (
             <button
               key={index}
@@ -92,9 +90,9 @@ export const PhotoSlider = ({ photos, parkName }: PhotoSliderProps) => {
         </div>
       )}
 
-      {/* Thumbnail Strip */}
+      {/* Thumbnail Strip - hidden on mobile */}
       {photos.length > 1 && (
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 max-w-[80%] overflow-x-auto pb-2 scrollbar-hide">
+        <div className="hidden md:flex absolute bottom-12 left-1/2 -translate-x-1/2 gap-2 max-w-[80%] overflow-x-auto pb-2 scrollbar-hide z-10">
           {photos.slice(0, 6).map((photo, index) => (
             <button
               key={photo.id}
@@ -112,6 +110,13 @@ export const PhotoSlider = ({ photos, parkName }: PhotoSliderProps) => {
               />
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Photo counter for mobile */}
+      {photos.length > 1 && (
+        <div className="md:hidden absolute top-4 right-4 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full text-white text-sm z-10">
+          {currentIndex + 1} / {photos.length}
         </div>
       )}
     </div>

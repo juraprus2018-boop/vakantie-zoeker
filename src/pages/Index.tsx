@@ -94,20 +94,20 @@ const Index = () => {
 
       {/* Interactive Map Section */}
       <section className="py-16 bg-muted/30">
-        <div className="container">
-          <div className="text-center mb-8">
+        <div className="container px-0 md:px-8">
+          <div className="text-center mb-8 px-4 md:px-0">
             <h2 className="text-2xl md:text-3xl font-bold">Ontdek op de kaart</h2>
             <p className="text-muted-foreground mt-1">Bekijk alle vakantieparken in Nederland</p>
           </div>
 
           {allParksLoading ? (
-            <div className="h-[500px] bg-muted rounded-lg animate-pulse" />
+            <div className="h-[400px] md:h-[500px] bg-muted md:rounded-lg animate-pulse mx-0 md:mx-0" />
           ) : allParks.length > 0 ? (
-            <div className="rounded-xl overflow-hidden shadow-lg border">
-              <ParkMap parks={allParks} className="h-[500px]" />
+            <div className="md:rounded-xl overflow-hidden shadow-lg md:border">
+              <ParkMap parks={allParks} className="h-[400px] md:h-[500px]" />
             </div>
           ) : (
-            <div className="h-[400px] bg-muted rounded-lg flex items-center justify-center">
+            <div className="h-[400px] bg-muted md:rounded-lg flex items-center justify-center mx-4 md:mx-0">
               <div className="text-center text-muted-foreground">
                 <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Nog geen parken beschikbaar</p>
@@ -115,7 +115,7 @@ const Index = () => {
             </div>
           )}
 
-          <div className="text-center mt-6">
+          <div className="text-center mt-6 px-4 md:px-0">
             <Link to="/kaart">
               <Button variant="outline" className="gap-2">
                 <MapPin className="h-4 w-4" />
