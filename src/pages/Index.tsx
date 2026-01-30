@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight } from "lucide-react";
+import { useParkPhotos } from "@/hooks/useParkPhotos";
 
 const parkTypes = [
   { id: "camping", label: "Campings", icon: Tent },
@@ -31,6 +32,9 @@ const Index = () => {
     queryKey: ["reviews", "recent"],
     queryFn: () => reviewsApi.getRecent(4),
   });
+
+  const featuredParkIds = featuredParks.map((p) => p.id);
+  const { data: photosByPark = {} } = useParkPhotos(featuredParkIds);
 
   return (
     <Layout>
@@ -140,7 +144,7 @@ const Index = () => {
           ) : featuredParks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredParks.map((park) => (
-                <ParkCard key={park.id} park={park} />
+                <ParkCard key={park.id} park={park} photoUrl={photosByPark[park.id]} />
               ))}
             </div>
           ) : (

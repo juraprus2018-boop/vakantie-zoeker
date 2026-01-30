@@ -16,6 +16,7 @@ import {
 import { parksApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, SlidersHorizontal, X, Search as SearchIcon } from "lucide-react";
+import { useParkPhotos } from "@/hooks/useParkPhotos";
 
 const parkTypeOptions = [
   { value: "all", label: "Alle types" },
@@ -79,6 +80,9 @@ const Search = () => {
         minRating: filters.minRating || undefined,
       }),
   });
+
+  const parkIds = parks.map((p) => p.id);
+  const { data: photosByPark = {} } = useParkPhotos(parkIds);
 
   const handleSearch = (query: string) => {
     setFilters((prev) => ({ ...prev, search: query }));
@@ -269,7 +273,7 @@ const Search = () => {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {parks.map((park) => (
-                <ParkCard key={park.id} park={park} />
+                <ParkCard key={park.id} park={park} photoUrl={photosByPark[park.id]} />
               ))}
             </div>
           </>
