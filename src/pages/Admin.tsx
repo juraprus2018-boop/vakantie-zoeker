@@ -130,10 +130,10 @@ const Admin = () => {
 
         setImportProgress(`Importeren ${current}/${totalPlaces}...`);
 
-        // Get full details
+        // Get full details (includes AI-categorized park_type)
         const details = await googlePlacesApi.getDetails(placeId);
 
-        // Create park
+        // Create park with AI-determined category
         const park = await parksApi.create({
           google_place_id: details.place_id,
           name: details.name,
@@ -148,7 +148,7 @@ const Admin = () => {
           website: details.website,
           phone: details.phone,
           opening_hours: details.opening_hours,
-          park_type: searchType as any,
+          park_type: (details.park_type || "vakantiepark") as any,
         });
 
         // Download and save photos to storage

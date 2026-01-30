@@ -32,6 +32,7 @@ export interface PlaceDetails {
   website?: string;
   phone?: string;
   types?: string[];
+  park_type?: string;
 }
 
 export const googlePlacesApi = {

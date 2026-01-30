@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const PARK_TYPES = ["camping", "bungalowpark", "glamping", "vakantiepark", "resort"] as const;
+
 interface PlaceResult {
   place_id: string;
   name: string;
@@ -29,6 +31,76 @@ interface PlaceResult {
   website?: string;
   formatted_phone_number?: string;
   types?: string[];
+}
+
+// AI-powered categorization function
+async function categorizePlace(name: string, types: string[], address: string): Promise<string> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) {
+    console.log("No LOVABLE_API_KEY, defaulting to vakantiepark");
+    return "vakantiepark";
+  }
+
+  try {
+    const prompt = `Je bent een expert in Nederlandse vakantieparken. Bepaal de beste categorie voor dit park op basis van de naam en gegevens.
+
+Parknaam: "${name}"
+Google Types: ${types.join(", ")}
+Adres: ${address}
+
+Kies EXACT één van deze categorieën:
+- camping: Traditionele campings met tenten, caravans, campers. Vaak eenvoudiger, natuurlijk.
+- bungalowpark: Parken met vooral (vakantie)huisjes, chalets, bungalows.
+- glamping: Luxe kamperen in safari-tenten, lodges, yurts, trekkershutten. "Glamorous camping".
+- vakantiepark: Grote parken met mix van accommodaties en veel faciliteiten (zwembad, animatie).
+- resort: Luxe resorts met hotel-achtige service, spa, restaurants.
+
+Antwoord met ALLEEN de categorie (één woord, lowercase).`;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 50,
+        temperature: 0,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("AI categorization failed:", response.status);
+      return "vakantiepark";
+    }
+
+    const data = await response.json();
+    const category = data.choices?.[0]?.message?.content?.trim()?.toLowerCase() || "vakantiepark";
+    
+    // Validate category
+    if (PARK_TYPES.includes(category as any)) {
+      console.log(`AI categorized "${name}" as: ${category}`);
+      return category;
+    }
+    
+    // Try to extract a valid category from the response
+    for (const type of PARK_TYPES) {
+      if (category.includes(type)) {
+        console.log(`AI categorized "${name}" as: ${type} (extracted)`);
+        return type;
+      }
+    }
+    
+    console.log(`AI returned invalid category "${category}", defaulting to vakantiepark`);
+    return "vakantiepark";
+  } catch (error) {
+    console.error("AI categorization error:", error);
+    return "vakantiepark";
+  }
 }
 
 serve(async (req) => {
@@ -143,6 +215,13 @@ serve(async (req) => {
         }
       }
 
+      // Use AI to categorize the place
+      const aiCategory = await categorizePlace(
+        place.name,
+        place.types || [],
+        place.formatted_address || ""
+      );
+
       const result = {
         place_id: place.place_id,
         name: place.name,
@@ -163,6 +242,7 @@ serve(async (req) => {
         website: place.website,
         phone: place.formatted_phone_number,
         types: place.types,
+        park_type: aiCategory,
       };
 
       return new Response(JSON.stringify({ success: true, result }), {
