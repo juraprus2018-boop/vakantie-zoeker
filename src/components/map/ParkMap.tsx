@@ -136,17 +136,17 @@ export const ParkMap = ({
       }
     });
 
-    // Fit bounds if we have markers
+    // Fit bounds if we have markers, but limit max zoom
     if (markersRef.current.length > 0) {
       const group = L.featureGroup(markersRef.current);
-      map.fitBounds(group.getBounds().pad(0.1));
+      map.fitBounds(group.getBounds().pad(0.3), { maxZoom: 10 });
     }
   }, [parks, onMarkerClick]);
 
   return (
     <div
       ref={mapRef}
-      className={`w-full h-full rounded-lg ${className}`}
+      className={`w-full h-full rounded-lg relative z-0 ${className}`}
       style={{ minHeight: "400px" }}
     />
   );
