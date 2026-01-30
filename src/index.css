@@ -129,4 +129,41 @@
   .leaflet-bottom {
     z-index: 10 !important;
   }
+
+  /* Custom cluster marker styles */
+  .custom-cluster-icon {
+    background: transparent;
+  }
+
+  .cluster-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 3px solid white;
+  }
+
+  .cluster-small {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+  }
+
+  .cluster-medium {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+    background: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(25 95% 43%) 100%);
+  }
+
+  .cluster-large {
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+    background: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(0 84% 50%) 100%);
+  }
 }
