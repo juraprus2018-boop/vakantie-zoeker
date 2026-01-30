@@ -3,9 +3,9 @@ import { Layout } from "@/components/layout/Layout";
 import { SearchBar } from "@/components/search/SearchBar";
 import { ParkCard } from "@/components/parks/ParkCard";
 import { ReviewCard } from "@/components/reviews/ReviewCard";
+import { ParkMap } from "@/components/map/ParkMap";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { parksApi, reviewsApi, Park, Review } from "@/lib/api/parks";
+import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight } from "lucide-react";
 
@@ -22,6 +22,11 @@ const Index = () => {
     queryFn: () => parksApi.getFeatured(),
   });
 
+  const { data: allParks = [], isLoading: allParksLoading } = useQuery({
+    queryKey: ["parks", "all"],
+    queryFn: () => parksApi.getAll(),
+  });
+
   const { data: recentReviews = [], isLoading: reviewsLoading } = useQuery({
     queryKey: ["reviews", "recent"],
     queryFn: () => reviewsApi.getRecent(4),
@@ -29,15 +34,27 @@ const Index = () => {
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-primary/5 to-background py-20 md:py-32">
-        <div className="container">
+      {/* Hero Section with Background */}
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=2070&auto=format&fit=crop')`,
+          }}
+        >
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-background" />
+        </div>
+
+        {/* Content */}
+        <div className="container relative z-10 py-20">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-white drop-shadow-lg">
               Ontdek de mooiste
-              <span className="text-primary block">vakantieparken van Nederland</span>
+              <span className="block text-white/90">vakantieparken van Nederland</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
+            <p className="text-lg md:text-xl text-white/80 mb-8 drop-shadow">
               Van gezellige campings tot luxe bungalowparken - vind jouw perfecte vakantiebestemming
             </p>
             <SearchBar className="max-w-xl mx-auto" />
@@ -57,6 +74,40 @@ const Index = () => {
                 </Button>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Map Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold">Ontdek op de kaart</h2>
+            <p className="text-muted-foreground mt-1">Bekijk alle vakantieparken in Nederland</p>
+          </div>
+
+          {allParksLoading ? (
+            <div className="h-[500px] bg-muted rounded-lg animate-pulse" />
+          ) : allParks.length > 0 ? (
+            <div className="rounded-xl overflow-hidden shadow-lg border">
+              <ParkMap parks={allParks} className="h-[500px]" />
+            </div>
+          ) : (
+            <div className="h-[400px] bg-muted rounded-lg flex items-center justify-center">
+              <div className="text-center text-muted-foreground">
+                <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nog geen parken beschikbaar</p>
+              </div>
+            </div>
+          )}
+
+          <div className="text-center mt-6">
+            <Link to="/kaart">
+              <Button variant="outline" className="gap-2">
+                <MapPin className="h-4 w-4" />
+                Bekijk volledige kaart
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
