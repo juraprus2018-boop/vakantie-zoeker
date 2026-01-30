@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parksApi } from "@/lib/api/parks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { JsonLd, getParkSchema, getBreadcrumbSchema } from "@/components/seo/JsonLd";
 import {
   Star,
   MapPin,
@@ -67,8 +69,26 @@ const ParkDetail = () => {
   const displayRating = park.google_rating ? Number(park.google_rating).toFixed(1) : null;
   const photos = park.photos || [];
 
+  const baseUrl = "https://vakantieparken.nl";
+
   return (
     <Layout>
+      <SEOHead
+        title={`${park.name} | Vakantiepark in ${park.city || park.province || "Nederland"}`}
+        description={park.description || `Bekijk ${park.name} in ${park.city || "Nederland"}. Reviews, foto's, faciliteiten en meer informatie.`}
+        canonical={`${baseUrl}/park/${park.id}`}
+        ogImage={photos[0]?.photo_url}
+        ogType="place"
+      />
+      <JsonLd data={getParkSchema({ ...park, photos })} />
+      <JsonLd
+        data={getBreadcrumbSchema([
+          { name: "Home", url: baseUrl },
+          { name: "Zoeken", url: `${baseUrl}/zoeken` },
+          { name: park.name, url: `${baseUrl}/park/${park.id}` },
+        ])}
+      />
+      
       {/* Hero Banner with Photo Slider */}
       <div className="relative">
         <PhotoSlider photos={photos} parkName={park.name} />
