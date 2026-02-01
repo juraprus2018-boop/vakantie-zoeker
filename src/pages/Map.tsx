@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
+import { useParkPhotos } from "@/hooks/useParkPhotos";
 
 const Map = () => {
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
@@ -17,6 +18,10 @@ const Map = () => {
     queryKey: ["parks", "all"],
     queryFn: () => parksApi.getAll(),
   });
+
+  // Fetch photos for all parks
+  const parkIds = parks.map((p) => p.id);
+  const { data: photosByPark = {} } = useParkPhotos(parkIds);
 
   // Group parks by province for the sidebar
   const parksByProvince = parks.reduce((acc, park) => {
@@ -52,6 +57,7 @@ const Map = () => {
             ) : (
               <ParkMap
                 parks={parks}
+                photosByPark={photosByPark}
                 className="h-full w-full"
                 onMarkerClick={(park) => setSelectedPark(park)}
               />
@@ -62,7 +68,14 @@ const Map = () => {
               <div className="absolute bottom-4 left-4 right-4 lg:hidden z-[1000]">
                 <Card className="shadow-lg">
                   <CardContent className="p-4">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      {photosByPark[selectedPark.id] && (
+                        <img 
+                          src={photosByPark[selectedPark.id]} 
+                          alt={selectedPark.name}
+                          className="w-20 h-16 object-cover rounded-lg shrink-0"
+                        />
+                      )}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold truncate">{selectedPark.name}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -75,10 +88,10 @@ const Map = () => {
                           </div>
                         )}
                       </div>
-                      <Link to={`/park/${selectedPark.id}`}>
-                        <Button size="sm">Bekijk</Button>
-                      </Link>
                     </div>
+                    <Link to={`/park/${selectedPark.id}`} className="block mt-3">
+                      <Button className="w-full">Bekijk park</Button>
+                    </Link>
                   </CardContent>
                 </Card>
               </div>
@@ -86,9 +99,9 @@ const Map = () => {
           </div>
 
           {/* Sidebar - Province list */}
-          <div className="w-full lg:w-80 bg-background border-t lg:border-t-0 lg:border-l overflow-y-auto max-h-64 lg:max-h-none">
+          <div className="w-full lg:w-96 bg-background border-t lg:border-t-0 lg:border-l overflow-y-auto max-h-64 lg:max-h-none">
             <div className="p-4 border-b sticky top-0 bg-background z-10">
-              <h1 className="text-xl font-bold">Vakantieparken</h1>
+              <h1 className="text-2xl font-bold">Vakantieparken</h1>
               <p className="text-sm text-muted-foreground">
                 {parks.length} parken in Nederland
               </p>
@@ -99,21 +112,41 @@ const Map = () => {
                 .sort(([a], [b]) => a.localeCompare(b))
                 .map(([province, provinceParks]) => (
                   <div key={province} className="p-4">
-                    <h2 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <h2 className="font-semibold text-base mb-3 flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-primary" />
                       {province}
                       <Badge variant="secondary" className="text-xs">
                         {provinceParks.length}
                       </Badge>
                     </h2>
-                    <ul className="space-y-1">
+                    <ul className="space-y-2">
                       {provinceParks.slice(0, 5).map((park) => (
                         <li key={park.id}>
                           <Link
                             to={`/park/${park.id}`}
-                            className="text-sm hover:text-primary transition-colors flex items-center justify-between py-1"
+                            className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-muted transition-colors"
                           >
-                            <span className="truncate pr-2">{park.name}</span>
+                            {photosByPark[park.id] ? (
+                              <img 
+                                src={photosByPark[park.id]} 
+                                alt={park.name}
+                                className="w-14 h-10 object-cover rounded-md shrink-0"
+                              />
+                            ) : (
+                              <div className="w-14 h-10 bg-muted rounded-md shrink-0 flex items-center justify-center">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm font-medium line-clamp-1 hover:text-primary transition-colors">
+                                {park.name}
+                              </span>
+                              {park.city && (
+                                <span className="text-xs text-muted-foreground block">
+                                  {park.city}
+                                </span>
+                              )}
+                            </div>
                             {park.google_rating && (
                               <span className="text-muted-foreground shrink-0 text-xs flex items-center gap-0.5">
                                 <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
