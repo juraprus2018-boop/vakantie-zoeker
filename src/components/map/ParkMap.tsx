@@ -16,6 +16,7 @@ L.Icon.Default.mergeOptions({
 
 interface ParkMapProps {
   parks: Park[];
+  photosByPark?: Record<string, string>;
   className?: string;
   center?: [number, number];
   zoom?: number;
@@ -24,6 +25,7 @@ interface ParkMapProps {
 
 export const ParkMap = ({
   parks,
+  photosByPark = {},
   className = "",
   center = [52.1326, 5.2913], // Center of Netherlands
   zoom = 7,
@@ -134,33 +136,57 @@ export const ParkMap = ({
           icon: customIcon,
         });
 
-        // Create popup content
+        const photoUrl = photosByPark[park.id];
+
+        // Create popup content with photo
         const popupContent = `
-          <div style="min-width: 200px; padding: 8px;">
-            <h3 style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">${park.name}</h3>
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
-              ${park.city || park.province || "Nederland"}
-            </p>
-            ${park.google_rating ? `
-              <div style="display: flex; align-items: center; gap: 4px; font-size: 12px; margin-bottom: 8px;">
-                <span style="color: #facc15;">★</span>
-                <span>${Number(park.google_rating).toFixed(1)}</span>
+          <div style="min-width: 240px; padding: 0;">
+            ${photoUrl ? `
+              <img 
+                src="${photoUrl}" 
+                alt="${park.name}"
+                style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px 8px 0 0;"
+              />
+            ` : `
+              <div style="width: 100%; height: 80px; background: #f3f4f6; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
               </div>
-            ` : ""}
-            <a href="/park/${park.id}" style="
-              display: inline-block;
-              padding: 6px 12px;
-              background: hsl(var(--primary));
-              color: white;
-              text-decoration: none;
-              border-radius: 6px;
-              font-size: 12px;
-              font-weight: 500;
-            ">Bekijk park</a>
+            `}
+            <div style="padding: 12px;">
+              <h3 style="font-weight: 700; font-size: 16px; margin-bottom: 4px; color: #1f2937;">${park.name}</h3>
+              <p style="font-size: 13px; color: #6b7280; margin-bottom: 8px;">
+                ${park.city || park.province || "Nederland"}
+              </p>
+              ${park.google_rating ? `
+                <div style="display: flex; align-items: center; gap: 4px; font-size: 13px; margin-bottom: 12px;">
+                  <span style="color: #facc15;">★</span>
+                  <span style="font-weight: 500;">${Number(park.google_rating).toFixed(1)}</span>
+                </div>
+              ` : ""}
+              <a href="/park/${park.id}" style="
+                display: block;
+                width: 100%;
+                padding: 10px 16px;
+                background: hsl(var(--primary));
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                text-align: center;
+                box-sizing: border-box;
+              ">Bekijk park</a>
+            </div>
           </div>
         `;
 
-        marker.bindPopup(popupContent);
+        marker.bindPopup(popupContent, {
+          maxWidth: 280,
+          className: 'custom-popup',
+        });
 
         if (onMarkerClick) {
           marker.on("click", () => onMarkerClick(park));
@@ -177,7 +203,7 @@ export const ParkMap = ({
     if (clusterGroup.getLayers().length > 0) {
       map.fitBounds(clusterGroup.getBounds().pad(0.3), { maxZoom: 10 });
     }
-  }, [parks, onMarkerClick]);
+  }, [parks, photosByPark, onMarkerClick]);
 
   return (
     <div
