@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { JsonLd, getBreadcrumbSchema } from "@/components/seo/JsonLd";
 import { 
   Building2, 
   CheckCircle, 
@@ -60,8 +62,20 @@ const steps = [
 ];
 
 const OwnerLanding = () => {
+  const baseUrl = "https://vakantieparken.nl";
   return (
     <Layout>
+      <SEOHead
+        title="Voor parkeigenaren: voeg uw vakantiepark toe | Vakantie Parken NL"
+        description="Bent u eigenaar van een vakantiepark, camping of bungalowpark? Registreer gratis en bereik duizenden nieuwe gasten via Vakantie Parken NL."
+        canonical={`${baseUrl}/eigenaar`}
+      />
+      <JsonLd
+        data={getBreadcrumbSchema([
+          { name: "Home", url: baseUrl },
+          { name: "Voor eigenaren", url: `${baseUrl}/eigenaar` },
+        ])}
+      />
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />

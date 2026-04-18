@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { JsonLd, getBreadcrumbSchema } from "@/components/seo/JsonLd";
 
 const Map = () => {
   const [selectedPark, setSelectedPark] = useState<Park | null>(null);
@@ -31,8 +33,21 @@ const Map = () => {
     return acc;
   }, {} as Record<string, Park[]>);
 
+  const baseUrl = "https://vakantieparken.nl";
+
   return (
     <Layout>
+      <SEOHead
+        title="Vakantieparken op de kaart | Vakantie Parken NL"
+        description={`Bekijk alle ${parks.length || ""} vakantieparken, campings en bungalowparken van Nederland op een interactieve kaart. Vind direct een park in jouw favoriete regio.`}
+        canonical={`${baseUrl}/kaart`}
+      />
+      <JsonLd
+        data={getBreadcrumbSchema([
+          { name: "Home", url: baseUrl },
+          { name: "Kaart", url: `${baseUrl}/kaart` },
+        ])}
+      />
       <div className="h-[calc(100vh-4rem)]">
         <div className="h-full flex flex-col lg:flex-row">
           {/* Map */}
