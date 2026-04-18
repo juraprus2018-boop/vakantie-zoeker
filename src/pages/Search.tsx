@@ -17,6 +17,8 @@ import { parksApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, SlidersHorizontal, X, Search as SearchIcon } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { JsonLd, getBreadcrumbSchema, getItemListSchema } from "@/components/seo/JsonLd";
 
 const parkTypeOptions = [
   { value: "all", label: "Alle types" },
@@ -135,14 +137,36 @@ const Search = () => {
   const hasActiveFilters =
     filters.search || filters.parkType !== "all" || filters.province || filters.minRating > 0;
 
+  const baseUrl = "https://vakantieparken.nl";
+  const seoTitle = filters.search
+    ? `Zoekresultaten "${filters.search}" | Vakantie Parken NL`
+    : filters.province
+    ? `Vakantieparken in ${filters.province} | Vakantie Parken NL`
+    : filters.parkType !== "all"
+    ? `${parkTypeOptions.find((o) => o.value === filters.parkType)?.label} in Nederland | Vakantie Parken NL`
+    : "Zoek vakantieparken in Nederland | Vakantie Parken NL";
+
   return (
     <Layout>
+      <SEOHead
+        title={seoTitle}
+        description={`Vind en vergelijk ${parks.length || "honderden"} vakantieparken, campings en bungalowparken in Nederland. Filter op type, provincie en beoordeling.`}
+        canonical={`${baseUrl}/zoeken`}
+      />
+      <JsonLd
+        data={getBreadcrumbSchema([
+          { name: "Home", url: baseUrl },
+          { name: "Zoeken", url: `${baseUrl}/zoeken` },
+        ])}
+      />
+      {parks.length > 0 && <JsonLd data={getItemListSchema(parks, baseUrl)} />}
+
       <div className="container py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Zoek vakantieparken</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Zoek vakantieparken in Nederland</h1>
           <p className="text-muted-foreground">
-            Vind het perfecte park voor jouw vakantie
+            Vind het perfecte vakantiepark, camping of bungalowpark voor jouw vakantie
           </p>
         </div>
 
