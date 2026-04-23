@@ -68,6 +68,34 @@ const Search = () => {
       }),
   });
 
+  // Fetch only available provinces and types from existing visible parks
+  const { data: availableOptions } = useQuery({
+    queryKey: ["search", "available-filters"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("parks")
+        .select("province, park_type")
+        .eq("is_visible", true);
+      if (error) throw error;
+      const provinces = Array.from(
+        new Set((data || []).map((p) => p.province).filter(Boolean) as string[])
+      ).sort();
+      const types = Array.from(
+        new Set((data || []).map((p) => p.park_type).filter(Boolean) as string[])
+      ).sort();
+      return { provinces, types };
+    },
+  });
+
+  const provinces = availableOptions?.provinces || [];
+  const parkTypeOptions = [
+    { value: "all", label: "Alle types" },
+    ...(availableOptions?.types || []).map((t) => ({
+      value: t,
+      label: parkTypeLabels[t] || t,
+    })),
+  ];
+
   const parkIds = parks.map((p) => p.id);
   const { data: photosByPark = {} } = useParkPhotos(parkIds);
 
