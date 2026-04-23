@@ -224,14 +224,14 @@ const Search = () => {
                 <div>
                   <Label htmlFor="province">Provincie</Label>
                   <Select
-                    value={filters.province}
-                    onValueChange={(value) => handleFilterChange("province", value)}
+                    value={filters.province || "all"}
+                    onValueChange={(value) => handleFilterChange("province", value === "all" ? "" : value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Alle provincies" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Alle provincies</SelectItem>
+                      <SelectItem value="all">Alle provincies</SelectItem>
                       {provinces.map((province) => (
                         <SelectItem key={province} value={province}>
                           {province}
