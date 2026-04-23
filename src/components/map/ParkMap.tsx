@@ -106,10 +106,10 @@ export const ParkMap = ({
       html: `
         <div style="position: relative; width: 34px; height: 44px;">
           <svg width="34" height="44" viewBox="0 0 34 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
-            <path d="M17 0C7.611 0 0 7.611 0 17c0 11.5 17 27 17 27s17-15.5 17-27c0-9.389-7.611-17-17-17z" fill="hsl(var(--primary))"/>
-            <path d="M17 1.5C8.44 1.5 1.5 8.44 1.5 17c0 10.5 15.5 25 15.5 25s15.5-14.5 15.5-25c0-8.56-6.94-15.5-15.5-15.5z" stroke="white" stroke-width="2" fill="none"/>
-            <circle cx="17" cy="17" r="6" fill="white"/>
-            <circle cx="17" cy="17" r="3" fill="hsl(var(--primary))"/>
+            <path d="M17 0C7.611 0 0 7.611 0 17c0 11.5 17 27 17 27s17-15.5 17-27c0-9.389-7.611-17-17-17z" fill="#3a8268"/>
+            <path d="M17 1.5C8.44 1.5 1.5 8.44 1.5 17c0 10.5 15.5 25 15.5 25s15.5-14.5 15.5-25c0-8.56-6.94-15.5-15.5-15.5z" stroke="#ffffff" stroke-width="2" fill="none"/>
+            <circle cx="17" cy="17" r="6" fill="#ffffff"/>
+            <circle cx="17" cy="17" r="3" fill="#3a8268"/>
           </svg>
         </div>
       `,
