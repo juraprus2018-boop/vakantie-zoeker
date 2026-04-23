@@ -15,34 +15,19 @@ import {
 } from "@/components/ui/select";
 import { parksApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { MapPin, SlidersHorizontal, X, Search as SearchIcon } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { JsonLd, getBreadcrumbSchema, getItemListSchema } from "@/components/seo/JsonLd";
 
-const parkTypeOptions = [
-  { value: "all", label: "Alle types" },
-  { value: "camping", label: "Camping" },
-  { value: "vakantiepark", label: "Vakantiepark" },
-  { value: "bungalowpark", label: "Bungalowpark" },
-  { value: "glamping", label: "Glamping" },
-  { value: "resort", label: "Resort" },
-];
-
-const provinces = [
-  "Drenthe",
-  "Flevoland",
-  "Friesland",
-  "Gelderland",
-  "Groningen",
-  "Limburg",
-  "Noord-Brabant",
-  "Noord-Holland",
-  "Overijssel",
-  "Utrecht",
-  "Zeeland",
-  "Zuid-Holland",
-];
+const parkTypeLabels: Record<string, string> = {
+  camping: "Camping",
+  vakantiepark: "Vakantiepark",
+  bungalowpark: "Bungalowpark",
+  glamping: "Glamping",
+  resort: "Resort",
+};
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -82,6 +67,34 @@ const Search = () => {
         minRating: filters.minRating || undefined,
       }),
   });
+
+  // Fetch only available provinces and types from existing visible parks
+  const { data: availableOptions } = useQuery({
+    queryKey: ["search", "available-filters"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("parks")
+        .select("province, park_type")
+        .eq("is_visible", true);
+      if (error) throw error;
+      const provinces = Array.from(
+        new Set((data || []).map((p) => p.province).filter(Boolean) as string[])
+      ).sort();
+      const types = Array.from(
+        new Set((data || []).map((p) => p.park_type).filter(Boolean) as string[])
+      ).sort();
+      return { provinces, types };
+    },
+  });
+
+  const provinces = availableOptions?.provinces || [];
+  const parkTypeOptions = [
+    { value: "all", label: "Alle types" },
+    ...(availableOptions?.types || []).map((t) => ({
+      value: t,
+      label: parkTypeLabels[t] || t,
+    })),
+  ];
 
   const parkIds = parks.map((p) => p.id);
   const { data: photosByPark = {} } = useParkPhotos(parkIds);
