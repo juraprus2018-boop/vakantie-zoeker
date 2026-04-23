@@ -62,12 +62,12 @@ const steps = [
 ];
 
 const OwnerLanding = () => {
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
   return (
     <Layout>
       <SEOHead
-        title="Voor parkeigenaren: voeg uw vakantiepark toe | Vakantie Parken NL"
-        description="Bent u eigenaar van een vakantiepark, camping of bungalowpark? Registreer gratis en bereik duizenden nieuwe gasten via Vakantie Parken NL."
+        title="Voor parkeigenaren: voeg uw camping of vakantiepark toe | Vakantielach"
+        description="Bent u eigenaar van een camping, vakantiepark of bungalowpark? Registreer gratis op Vakantielach en bereik duizenden nieuwe gasten."
         canonical={`${baseUrl}/eigenaar`}
       />
       <JsonLd
