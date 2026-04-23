@@ -137,14 +137,16 @@ const Search = () => {
   const hasActiveFilters =
     filters.search || filters.parkType !== "all" || filters.province || filters.minRating > 0;
 
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
   const seoTitle = filters.search
-    ? `Zoekresultaten "${filters.search}" | Vakantie Parken NL`
+    ? `${filters.search} — campings & vakantieparken | Vakantielach`
+    : filters.province && filters.parkType !== "all"
+    ? `${parkTypeOptions.find((o) => o.value === filters.parkType)?.label} in ${filters.province} | Vakantielach`
     : filters.province
-    ? `Vakantieparken in ${filters.province} | Vakantie Parken NL`
+    ? `Campings & vakantieparken in ${filters.province} | Vakantielach`
     : filters.parkType !== "all"
-    ? `${parkTypeOptions.find((o) => o.value === filters.parkType)?.label} in Nederland | Vakantie Parken NL`
-    : "Zoek vakantieparken in Nederland | Vakantie Parken NL";
+    ? `${parkTypeOptions.find((o) => o.value === filters.parkType)?.label} in Nederland | Vakantielach`
+    : "Zoek campings & vakantieparken in Nederland | Vakantielach";
 
   return (
     <Layout>

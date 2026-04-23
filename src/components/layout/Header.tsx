@@ -33,9 +33,9 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <MapPin className="h-6 w-6 text-primary" />
-          <span className="text-xl font-semibold">Vakantie Parken NL</span>
+        <Link to="/" className="flex items-center gap-2" aria-label="Vakantielach homepage">
+          <img src="/favicon.png" alt="Vakantielach logo" className="h-8 w-8" width={32} height={32} />
+          <span className="text-xl font-semibold">Vakantielach</span>
         </Link>
 
         {/* Desktop Navigation */}

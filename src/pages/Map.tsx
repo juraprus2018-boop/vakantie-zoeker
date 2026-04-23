@@ -33,13 +33,13 @@ const Map = () => {
     return acc;
   }, {} as Record<string, Park[]>);
 
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
 
   return (
     <Layout>
       <SEOHead
-        title="Vakantieparken op de kaart | Vakantie Parken NL"
-        description={`Bekijk alle ${parks.length || ""} vakantieparken, campings en bungalowparken van Nederland op een interactieve kaart. Vind direct een park in jouw favoriete regio.`}
+        title="Campings & vakantieparken op de kaart | Vakantielach"
+        description={`Bekijk alle ${parks.length || ""} campings, vakantieparken en bungalowparken van Nederland op een interactieve kaart. Zoom in op jouw plaats of provincie.`}
         canonical={`${baseUrl}/kaart`}
       />
       <JsonLd

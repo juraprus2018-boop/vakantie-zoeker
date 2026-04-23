@@ -41,9 +41,10 @@ const Index = () => {
   return (
     <Layout>
       <SEOHead
-        title="Vakantie Parken NL | Ontdek de mooiste vakantieparken van Nederland"
-        description="Vind en vergelijk de beste vakantieparken, campings, bungalowparken en glamping in Nederland. Bekijk reviews, foto's en boek direct."
-        canonical="https://vakantieparken.nl"
+        title="Vakantielach | Campings, vakantieparken & bungalowparken in Nederland"
+        description="Vind de beste campings, vakantieparken, bungalowparken en glamping in Nederland. Zoek op plaats, provincie of parknaam — met foto's, reviews en directe links."
+        canonical="https://vakantielach.nl/"
+        ogImage="/og-image.jpg"
       />
       <JsonLd data={getWebsiteSchema()} />
       <JsonLd data={getOrganizationSchema()} />
@@ -65,11 +66,11 @@ const Index = () => {
         <div className="container relative z-10 py-20">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-white drop-shadow-lg">
-              Ontdek de mooiste
-              <span className="block text-white/90">vakantieparken van Nederland</span>
+              Vind jouw perfecte
+              <span className="block text-white/90">camping of vakantiepark</span>
             </h1>
             <p className="text-lg md:text-xl text-white/80 mb-8 drop-shadow">
-              Van gezellige campings tot luxe bungalowparken - vind jouw perfecte vakantiebestemming
+              Vakantielach toont alle campings, vakantieparken en bungalowparken van Nederland — zoek op plaats of parknaam
             </p>
             <SearchBar className="max-w-xl mx-auto" />
           </div>

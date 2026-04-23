@@ -91,13 +91,13 @@ const LandingParkType = () => {
     );
   }
 
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
 
   return (
     <Layout>
       <SEOHead
-        title={`${typeData.title} | Vakantie Parken NL`}
-        description={typeData.description}
+        title={`${typeData.title} in Nederland | Vakantielach`}
+        description={`${typeData.description} Vakantielach toont alle ${typeData.title.toLowerCase()} per provincie en plaats.`}
         canonical={`${baseUrl}/${type}`}
       />
       <JsonLd
