@@ -282,6 +282,49 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Browse by Province */}
+      <section className="py-16">
+        <div className="container">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold">Vakantieparken per provincie</h2>
+            <p className="text-muted-foreground mt-2">Bekijk alle parken in jouw favoriete provincie</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {provinces.map((p) => (
+              <Link
+                key={p.slug}
+                to={`/provincie/${p.slug}`}
+                className="group p-4 bg-card border rounded-lg hover:shadow-md hover:border-primary/40 transition-all flex items-center gap-3"
+              >
+                <MapPin className="h-5 w-5 text-primary shrink-0" />
+                <span className="font-medium group-hover:text-primary transition-colors">{p.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-muted/30">
+        <div className="container">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">Veelgestelde vragen</h2>
+            <p className="text-muted-foreground text-center mb-8">Alles wat je moet weten over Vakantielach</p>
+            <div className="space-y-4">
+              {homeFaqs.map((faq, i) => (
+                <details key={i} className="bg-background border rounded-lg p-6 group">
+                  <summary className="font-semibold cursor-pointer list-none flex items-center justify-between">
+                    {faq.question}
+                    <ChevronRight className="h-5 w-5 transition-transform group-open:rotate-90 shrink-0" />
+                  </summary>
+                  <p className="text-muted-foreground mt-3">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20">
         <div className="container">
