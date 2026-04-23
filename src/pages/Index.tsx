@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { SearchBar } from "@/components/search/SearchBar";
 import { ParkCard } from "@/components/parks/ParkCard";
 import { ReviewCard } from "@/components/reviews/ReviewCard";
 import { ParkMap } from "@/components/map/ParkMap";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight } from "lucide-react";
+import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight, Star } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { JsonLd, getWebsiteSchema, getOrganizationSchema } from "@/components/seo/JsonLd";
@@ -20,6 +22,8 @@ const parkTypes = [
 ];
 
 const Index = () => {
+  const [selectedPark, setSelectedPark] = useState<Park | null>(null);
+
   const { data: featuredParks = [], isLoading: parksLoading } = useQuery({
     queryKey: ["parks", "featured"],
     queryFn: () => parksApi.getFeatured(),
@@ -36,7 +40,8 @@ const Index = () => {
   });
 
   const featuredParkIds = featuredParks.map((p) => p.id);
-  const { data: photosByPark = {} } = useParkPhotos(featuredParkIds);
+  const allParkIds = allParks.map((p) => p.id);
+  const { data: photosByPark = {} } = useParkPhotos([...new Set([...featuredParkIds, ...allParkIds])]);
 
   return (
     <Layout>
@@ -98,17 +103,56 @@ const Index = () => {
         <div className="container px-0 md:px-8">
           <div className="text-center mb-8 px-4 md:px-0">
             <h2 className="text-2xl md:text-3xl font-bold">Ontdek op de kaart</h2>
-            <p className="text-muted-foreground mt-1">Bekijk alle vakantieparken in Nederland</p>
+            <p className="text-muted-foreground mt-1">Klik op een marker voor parkdetails</p>
           </div>
 
           {allParksLoading ? (
-            <div className="h-[400px] md:h-[500px] bg-muted md:rounded-lg animate-pulse mx-0 md:mx-0" />
+            <div className="h-[450px] md:h-[550px] bg-muted md:rounded-xl animate-pulse" />
           ) : allParks.length > 0 ? (
-            <div className="md:rounded-xl overflow-hidden shadow-lg md:border">
-              <ParkMap parks={allParks} className="h-[400px] md:h-[500px]" />
+            <div className="relative md:rounded-xl overflow-hidden shadow-lg md:border">
+              <ParkMap
+                parks={allParks}
+                photosByPark={photosByPark}
+                className="h-[450px] md:h-[550px] w-full"
+                onMarkerClick={(park) => setSelectedPark(park)}
+              />
+
+              {/* Selected Park Card - Mobile overlay (same as /kaart) */}
+              {selectedPark && (
+                <div className="absolute bottom-4 left-4 right-4 lg:hidden z-[1000]">
+                  <Card className="shadow-lg">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-4">
+                        {photosByPark[selectedPark.id] && (
+                          <img
+                            src={photosByPark[selectedPark.id]}
+                            alt={selectedPark.name}
+                            className="w-20 h-16 object-cover rounded-lg shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold truncate">{selectedPark.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {selectedPark.city || selectedPark.province}
+                          </p>
+                          {selectedPark.google_rating && (
+                            <div className="flex items-center gap-1 mt-1 text-sm">
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              <span>{Number(selectedPark.google_rating).toFixed(1)}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <Link to={`/park/${selectedPark.id}`} className="block mt-3">
+                        <Button className="w-full">Bekijk park</Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="h-[400px] bg-muted md:rounded-lg flex items-center justify-center mx-4 md:mx-0">
+            <div className="h-[400px] bg-muted md:rounded-xl flex items-center justify-center mx-4 md:mx-0">
               <div className="text-center text-muted-foreground">
                 <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Nog geen parken beschikbaar</p>
