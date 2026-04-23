@@ -159,7 +159,7 @@ export const ParkMap = ({
                 display: block;
                 width: 100%;
                 padding: 10px 16px;
-                background: hsl(var(--primary));
+                background: #3a8268;
                 color: white;
                 text-decoration: none;
                 border-radius: 8px;
