@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parksApi } from "@/lib/api/parks";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { JsonLd, getParkSchema, getBreadcrumbSchema } from "@/components/seo/JsonLd";
+import { JsonLd, getParkSchema, getBreadcrumbSchema, getFaqSchema } from "@/components/seo/JsonLd";
 import {
   Star,
   MapPin,
@@ -84,12 +84,40 @@ const ParkDetail = () => {
         ogImage={photos[0]?.photo_url}
         ogType="place"
       />
-      <JsonLd data={getParkSchema({ ...park, photos })} />
+      <JsonLd data={getParkSchema({ ...park, photos, reviews: park.reviews })} />
       <JsonLd
         data={getBreadcrumbSchema([
           { name: "Home", url: baseUrl },
           { name: "Zoeken", url: `${baseUrl}/zoeken` },
+          ...(park.province ? [{ name: park.province, url: `${baseUrl}/provincie/${park.province.toLowerCase().replace(/\s+/g, "-")}` }] : []),
           { name: park.name, url: `${baseUrl}/park/${park.id}` },
+        ])}
+      />
+      <JsonLd
+        data={getFaqSchema([
+          {
+            question: `Waar ligt ${park.name}?`,
+            answer: `${park.name} ligt in ${park.city || park.province || "Nederland"}${park.address ? ` (${park.address})` : ""}.`,
+          },
+          {
+            question: `Hoe boek ik een verblijf bij ${park.name}?`,
+            answer: park.website
+              ? `Je kunt direct boeken via de officiële website van ${park.name}: ${park.website}`
+              : `Neem contact op met het park voor reservering${park.phone ? ` via ${park.phone}` : ""}.`,
+          },
+          {
+            question: `Wat zijn de faciliteiten van ${park.name}?`,
+            answer:
+              park.facilities && park.facilities.length > 0
+                ? `${park.name} biedt onder andere: ${park.facilities.join(", ")}.`
+                : `Bekijk de detailpagina voor alle faciliteiten van ${park.name}.`,
+          },
+          ...(park.google_rating
+            ? [{
+                question: `Hoe wordt ${park.name} beoordeeld?`,
+                answer: `${park.name} heeft een gemiddelde beoordeling van ${Number(park.google_rating).toFixed(1)} uit 5${park.google_ratings_total ? ` op basis van ${park.google_ratings_total} reviews` : ""}.`,
+              }]
+            : []),
         ])}
       />
       
