@@ -9,16 +9,54 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight, Star } from "lucide-react";
+import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight, Star, ChevronRight } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { JsonLd, getWebsiteSchema, getOrganizationSchema } from "@/components/seo/JsonLd";
+import { JsonLd, getWebsiteSchema, getOrganizationSchema, getFaqSchema } from "@/components/seo/JsonLd";
 
 const parkTypes = [
   { id: "camping", label: "Campings", icon: Tent },
   { id: "bungalowpark", label: "Bungalowparken", icon: Home },
   { id: "glamping", label: "Glamping", icon: Sparkles },
   { id: "vakantiepark", label: "Vakantieparken", icon: Trees },
+];
+
+const provinces = [
+  { slug: "drenthe", name: "Drenthe" },
+  { slug: "flevoland", name: "Flevoland" },
+  { slug: "friesland", name: "Friesland" },
+  { slug: "gelderland", name: "Gelderland" },
+  { slug: "groningen", name: "Groningen" },
+  { slug: "limburg", name: "Limburg" },
+  { slug: "noord-brabant", name: "Noord-Brabant" },
+  { slug: "noord-holland", name: "Noord-Holland" },
+  { slug: "overijssel", name: "Overijssel" },
+  { slug: "utrecht", name: "Utrecht" },
+  { slug: "zeeland", name: "Zeeland" },
+  { slug: "zuid-holland", name: "Zuid-Holland" },
+];
+
+const homeFaqs = [
+  {
+    question: "Wat is Vakantielach?",
+    answer: "Vakantielach is dé Nederlandse gids voor campings, vakantieparken, bungalowparken en glamping. Je vindt hier alle parken op één plek met foto's, beoordelingen en directe links naar de officiële websites.",
+  },
+  {
+    question: "Hoe vind ik een camping in een specifieke plaats?",
+    answer: "Gebruik de zoekbalk bovenaan en typ de plaatsnaam in (bijvoorbeeld 'Renesse' of 'Texel'), of bezoek een provincie- of plaats-pagina via het menu. Op de kaart kun je ook visueel zoeken.",
+  },
+  {
+    question: "Is Vakantielach gratis te gebruiken?",
+    answer: "Ja, Vakantielach is volledig gratis. We zijn een onafhankelijke gids en je boekt direct bij het park zelf via de officiële website.",
+  },
+  {
+    question: "Kan ik zelf een review plaatsen?",
+    answer: "Ja, op elke parkpagina kun je zonder account een review achterlaten. Reviews worden gemodereerd om kwaliteit te garanderen.",
+  },
+  {
+    question: "Ben ik eigenaar van een park — kan ik mijn park toevoegen?",
+    answer: "Ja, ga naar de pagina 'Voor eigenaren' om je park gratis aan te melden of om een bestaande vermelding te claimen.",
+  },
 ];
 
 const Index = () => {
