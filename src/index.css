@@ -132,38 +132,70 @@
 
   /* Custom cluster marker styles */
   .custom-cluster-icon {
-    background: transparent;
+    background: transparent !important;
+    border: none !important;
   }
 
   .cluster-marker {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 9999px;
     color: white;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    border: 3px solid white;
+    font-weight: 700;
+    font-family: inherit;
+    line-height: 1;
+    box-shadow: 0 6px 16px -2px hsl(var(--primary) / 0.45), 0 0 0 4px hsl(var(--background) / 0.95);
+    border: 2px solid hsl(var(--background));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+
+  .cluster-marker:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 22px -2px hsl(var(--primary) / 0.6), 0 0 0 4px hsl(var(--background));
   }
 
   .cluster-small {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.8) 100%);
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.85) 100%);
   }
 
   .cluster-medium {
-    width: 50px;
-    height: 50px;
-    font-size: 16px;
-    background: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(25 95% 43%) 100%);
+    width: 46px;
+    height: 46px;
+    font-size: 15px;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.75) 100%);
   }
 
   .cluster-large {
-    width: 60px;
-    height: 60px;
-    font-size: 18px;
-    background: linear-gradient(135deg, hsl(0 84% 60%) 0%, hsl(0 84% 50%) 100%);
+    width: 56px;
+    height: 56px;
+    font-size: 17px;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.65) 100%);
+  }
+
+  /* Custom marker pin */
+  .custom-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Popup polish */
+  .custom-popup .leaflet-popup-content-wrapper {
+    border-radius: 14px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.25);
+  }
+
+  .custom-popup .leaflet-popup-content {
+    margin: 0;
+  }
+
+  .custom-popup .leaflet-popup-tip {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   }
 }
