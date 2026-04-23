@@ -91,6 +91,7 @@ const Index = () => {
       />
       <JsonLd data={getWebsiteSchema()} />
       <JsonLd data={getOrganizationSchema()} />
+      <JsonLd data={getFaqSchema(homeFaqs)} />
       
       {/* Hero Section with Background */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
