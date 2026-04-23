@@ -69,13 +69,17 @@ const ParkDetail = () => {
   const displayRating = park.google_rating ? Number(park.google_rating).toFixed(1) : null;
   const photos = park.photos || [];
 
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
+  const typeLabel = park.park_type
+    ? park.park_type.charAt(0).toUpperCase() + park.park_type.slice(1)
+    : "Vakantiepark";
+  const locationLabel = park.city || park.province || "Nederland";
 
   return (
     <Layout>
       <SEOHead
-        title={`${park.name} | Vakantiepark in ${park.city || park.province || "Nederland"}`}
-        description={park.description || `Bekijk ${park.name} in ${park.city || "Nederland"}. Reviews, foto's, faciliteiten en meer informatie.`}
+        title={`${park.name} — ${typeLabel} in ${locationLabel} | Vakantielach`}
+        description={park.description?.slice(0, 155) || `${park.name}: ${typeLabel.toLowerCase()} in ${locationLabel}. Bekijk foto's, reviews, faciliteiten en contactgegevens op Vakantielach.`}
         canonical={`${baseUrl}/park/${park.id}`}
         ogImage={photos[0]?.photo_url}
         ogType="place"

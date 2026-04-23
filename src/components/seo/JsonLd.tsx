@@ -17,12 +17,12 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data }) => {
 export const getWebsiteSchema = () => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Vakantie Parken NL",
-  url: "https://vakantieparken.nl",
-  description: "Ontdek de mooiste vakantieparken, campings en bungalowparken in Nederland",
+  name: "Vakantielach",
+  url: "https://vakantielach.nl",
+  description: "Vind alle campings, vakantieparken en bungalowparken in Nederland. Zoek op plaats, provincie of parknaam.",
   potentialAction: {
     "@type": "SearchAction",
-    target: "https://vakantieparken.nl/zoeken?q={search_term_string}",
+    target: "https://vakantielach.nl/zoeken?q={search_term_string}",
     "query-input": "required name=search_term_string",
   },
 });
@@ -31,9 +31,9 @@ export const getWebsiteSchema = () => ({
 export const getOrganizationSchema = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "Vakantie Parken NL",
-  url: "https://vakantieparken.nl",
-  logo: "https://vakantieparken.nl/logo.png",
+  name: "Vakantielach",
+  url: "https://vakantielach.nl",
+  logo: "https://vakantielach.nl/favicon.png",
   sameAs: [],
   contactPoint: {
     "@type": "ContactPoint",

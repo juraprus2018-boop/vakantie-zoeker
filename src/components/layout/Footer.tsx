@@ -7,12 +7,12 @@ export const Footer = () => {
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <MapPin className="h-5 w-5 text-primary" />
-              <span className="text-lg font-semibold">Vakantie Parken NL</span>
+            <Link to="/" className="flex items-center gap-2 mb-4" aria-label="Vakantielach homepage">
+              <img src="/favicon.png" alt="Vakantielach logo" className="h-7 w-7" width={28} height={28} loading="lazy" />
+              <span className="text-lg font-semibold">Vakantielach</span>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Ontdek de mooiste vakantieparken en campings in Nederland.
+              Vakantielach helpt je de mooiste campings, vakantieparken en bungalowparken in Nederland te vinden.
             </p>
           </div>
           
@@ -75,7 +75,7 @@ export const Footer = () => {
         </div>
         
         <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Vakantie Parken Nederland. Alle rechten voorbehouden.
+          © {new Date().getFullYear()} Vakantielach. Alle rechten voorbehouden.
         </div>
       </div>
     </footer>

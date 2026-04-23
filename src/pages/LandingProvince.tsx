@@ -73,13 +73,13 @@ const LandingProvince = () => {
     );
   }
 
-  const baseUrl = "https://vakantieparken.nl";
+  const baseUrl = "https://vakantielach.nl";
 
   return (
     <Layout>
       <SEOHead
-        title={`${provinceInfo.title} | Vakantie Parken NL`}
-        description={provinceInfo.description}
+        title={`Campings & vakantieparken in ${provinceName} | Vakantielach`}
+        description={`${provinceInfo.description} Bekijk alle campings, vakantieparken en bungalowparken in ${provinceName} op Vakantielach.`}
         canonical={`${baseUrl}/provincie/${province}`}
       />
       <JsonLd
