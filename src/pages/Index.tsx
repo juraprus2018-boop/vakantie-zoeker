@@ -9,16 +9,54 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { parksApi, reviewsApi, Park } from "@/lib/api/parks";
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight, Star } from "lucide-react";
+import { MapPin, Tent, Home, Sparkles, Trees, ArrowRight, Star, ChevronRight } from "lucide-react";
 import { useParkPhotos } from "@/hooks/useParkPhotos";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { JsonLd, getWebsiteSchema, getOrganizationSchema } from "@/components/seo/JsonLd";
+import { JsonLd, getWebsiteSchema, getOrganizationSchema, getFaqSchema } from "@/components/seo/JsonLd";
 
 const parkTypes = [
   { id: "camping", label: "Campings", icon: Tent },
   { id: "bungalowpark", label: "Bungalowparken", icon: Home },
   { id: "glamping", label: "Glamping", icon: Sparkles },
   { id: "vakantiepark", label: "Vakantieparken", icon: Trees },
+];
+
+const provinces = [
+  { slug: "drenthe", name: "Drenthe" },
+  { slug: "flevoland", name: "Flevoland" },
+  { slug: "friesland", name: "Friesland" },
+  { slug: "gelderland", name: "Gelderland" },
+  { slug: "groningen", name: "Groningen" },
+  { slug: "limburg", name: "Limburg" },
+  { slug: "noord-brabant", name: "Noord-Brabant" },
+  { slug: "noord-holland", name: "Noord-Holland" },
+  { slug: "overijssel", name: "Overijssel" },
+  { slug: "utrecht", name: "Utrecht" },
+  { slug: "zeeland", name: "Zeeland" },
+  { slug: "zuid-holland", name: "Zuid-Holland" },
+];
+
+const homeFaqs = [
+  {
+    question: "Wat is Vakantielach?",
+    answer: "Vakantielach is dé Nederlandse gids voor campings, vakantieparken, bungalowparken en glamping. Je vindt hier alle parken op één plek met foto's, beoordelingen en directe links naar de officiële websites.",
+  },
+  {
+    question: "Hoe vind ik een camping in een specifieke plaats?",
+    answer: "Gebruik de zoekbalk bovenaan en typ de plaatsnaam in (bijvoorbeeld 'Renesse' of 'Texel'), of bezoek een provincie- of plaats-pagina via het menu. Op de kaart kun je ook visueel zoeken.",
+  },
+  {
+    question: "Is Vakantielach gratis te gebruiken?",
+    answer: "Ja, Vakantielach is volledig gratis. We zijn een onafhankelijke gids en je boekt direct bij het park zelf via de officiële website.",
+  },
+  {
+    question: "Kan ik zelf een review plaatsen?",
+    answer: "Ja, op elke parkpagina kun je zonder account een review achterlaten. Reviews worden gemodereerd om kwaliteit te garanderen.",
+  },
+  {
+    question: "Ben ik eigenaar van een park — kan ik mijn park toevoegen?",
+    answer: "Ja, ga naar de pagina 'Voor eigenaren' om je park gratis aan te melden of om een bestaande vermelding te claimen.",
+  },
 ];
 
 const Index = () => {
@@ -53,6 +91,7 @@ const Index = () => {
       />
       <JsonLd data={getWebsiteSchema()} />
       <JsonLd data={getOrganizationSchema()} />
+      <JsonLd data={getFaqSchema(homeFaqs)} />
       
       {/* Hero Section with Background */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
@@ -239,6 +278,49 @@ const Index = () => {
                 <p className="text-muted-foreground">Nog geen reviews beschikbaar</p>
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Browse by Province */}
+      <section className="py-16">
+        <div className="container">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold">Vakantieparken per provincie</h2>
+            <p className="text-muted-foreground mt-2">Bekijk alle parken in jouw favoriete provincie</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {provinces.map((p) => (
+              <Link
+                key={p.slug}
+                to={`/provincie/${p.slug}`}
+                className="group p-4 bg-card border rounded-lg hover:shadow-md hover:border-primary/40 transition-all flex items-center gap-3"
+              >
+                <MapPin className="h-5 w-5 text-primary shrink-0" />
+                <span className="font-medium group-hover:text-primary transition-colors">{p.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-16 bg-muted/30">
+        <div className="container">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">Veelgestelde vragen</h2>
+            <p className="text-muted-foreground text-center mb-8">Alles wat je moet weten over Vakantielach</p>
+            <div className="space-y-4">
+              {homeFaqs.map((faq, i) => (
+                <details key={i} className="bg-background border rounded-lg p-6 group">
+                  <summary className="font-semibold cursor-pointer list-none flex items-center justify-between">
+                    {faq.question}
+                    <ChevronRight className="h-5 w-5 transition-transform group-open:rotate-90 shrink-0" />
+                  </summary>
+                  <p className="text-muted-foreground mt-3">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </div>
       </section>

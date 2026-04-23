@@ -16,6 +16,7 @@ import OwnerAuth from "./pages/OwnerAuth";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import LandingParkType from "./pages/LandingParkType";
 import LandingProvince from "./pages/LandingProvince";
+import LandingPlaats from "./pages/LandingPlaats";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/vakantiepark" element={<LandingParkType />} />
             <Route path="/resort" element={<LandingParkType />} />
             <Route path="/provincie/:province" element={<LandingProvince />} />
+            <Route path="/plaats/:city" element={<LandingPlaats />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

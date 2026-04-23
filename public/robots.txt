@@ -1,16 +1,15 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /eigenaar/dashboard
+Disallow: /eigenaar/login
+Disallow: /eigenaar/registreren
 
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
 Allow: /
 
 Sitemap: https://vakantielach.nl/sitemap.xml
